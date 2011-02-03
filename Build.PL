@@ -23,9 +23,6 @@ use File::Spec;
 # Foundation, Inc., 59 Temple Place,Suite 330, Boston, MA 02111-1307,
 # USA
 
-my $file = File::Spec->catfile(File::Spec->curdir, "lib", "File",
-			       "SearchPath.pm");
-
 # Set it up.
 my $build = Module::Build->new
   (
