@@ -27,9 +27,9 @@ use File::Spec;
 my $build = Module::Build->new
   (
    module_name => 'Starlink::AMS',
-   abstract => 'Messaging interface to ADAM Tasks',
+   dist_abstract => 'Messaging interface to ADAM Tasks',
    license  => 'gpl',
-   author => [
+   dist_author => [
               'Tim Jenness <t.jenness@jach.hawaii.edu>',
              ],
    dist_version => '1.02',
