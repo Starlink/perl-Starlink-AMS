@@ -41,9 +41,10 @@ use base qw/Exporter/;  # So that version checking is available
 
 use vars qw/$VERSION/;
 
-# NDF required for A-task parameter retrieval
+# EMS and NDF required for A-task parameter retrieval
 # Only 'use' when we need to
 use autouse NDF => qw/ par_get($$$) /;
+use autouse 'Starlink::EMS' => qw/ emsBegin emsEnd emsAnnul /;
 
 # Access the Core functions
 use Starlink::AMS::Core qw/:Func/;
@@ -420,6 +421,10 @@ If the monolith has been started as an A-task the adam messaging
 system can not be used to retrieve the parameter value. Instead,
 the par_get routine from the perl NDF module is invoked.
 
+The status parameter is 0 for success and non-zero for bad. EMS
+should not be used to retrieve an error message stack. The status
+value may refer to a particular EMS error code.
+
 =cut
 
 
@@ -481,7 +486,19 @@ sub get {
       $old_adam = $ENV{ADAM_USER} if exists $ENV{ADAM_USER};
       $ENV{ADAM_USER} = $self->adamdir;
 
-      @values = par_get($param, $file, \$status);
+      # Status must be contained within this routine
+      # An error context must be started to prevent EMS error messages
+      # going immediately to standard output before they are annulled.
+      my $ndfstatus = &Starlink::ADAM::SAI__OK;
+      emsBegin($ndfstatus);
+
+      @values = par_get($param, $file, \$ndfstatus);
+
+      if ($ndfstatus != &Starlink::ADAM::SAI__OK) {
+        $status = $ndfstatus;
+        emsAnnul( $ndfstatus );
+      }
+      emsEnd($ndfstatus);
 
       # Reset ADAM_USER
       if (defined $old_adam) {
