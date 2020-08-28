@@ -339,6 +339,17 @@ sub adamtask {
         last;
       }
     }
+    elsif( exists $ENV{'PERLAMS_GDB_MON'} ) {
+      my $mon = $ENV{'PERLAMS_GDB_MON'};
+      if( $image =~ $mon ) {
+        my $opts = '';
+        if( exists( $ENV{'PERLAMS_GDB_OPTS'} ) ) {
+          $opts = $ENV{'PERLAMS_GDB_OPTS'};
+        }
+
+        $image = "gdb $opts $image";
+      }
+    }
 
     # Now execute the task in this new environment
     # and store the object.
@@ -962,6 +973,13 @@ PERLAMS_VALGRIND_OPTS environment variable to "--track-fds=yes
 --num-callers=16". This will result in a log file in the process's
 current working directory of the form "valgrind.kappa_mon.<pid>",
 where <pid> is the process ID number.
+
+=head2 B<gdb>
+
+Alternatively a monolith can be run with gdb.  For example:
+
+    setenv PERLAMS_GDB_MON kappa_mon
+    setenv PERLAMS_GDB_OPTS "-ex run"
 
 =head1 NOTES
 
