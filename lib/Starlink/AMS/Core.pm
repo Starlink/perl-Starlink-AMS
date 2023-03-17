@@ -963,16 +963,20 @@ is a comma-separated list of monoliths that you wish to run through
 valgrind. If you wish to run all monoliths through valgrind, set this
 environment variable to '*'. PERLAMS_VALGRIND_OPTS lets you set
 valgrind options. Note that the "--log-file" option is already set so
-that log files will be of the form "valgrind.<monolith>.<pid>" in the
+that log files will be of the form "valgrind.<monolith>" in the
 process's current working directory.
 
 As an example, to trace open filehandles using sixteen levels of
 callers in the kappa_mon monolith, one would set the
 PERLAMS_VALGRIND_MONS environment variable to "kappa_mon", and the
 PERLAMS_VALGRIND_OPTS environment variable to "--track-fds=yes
---num-callers=16". This will result in a log file in the process's
-current working directory of the form "valgrind.kappa_mon.<pid>",
-where <pid> is the process ID number.
+--num-callers=16".
+
+In an other example, to search for memory leaks including those considered
+still reachable, perhaps because a pointer is registered with CNF:
+
+    setenv PERLAMS_VALGRIND_MONS kappa_mon
+    setenv PERLAMS_VALGRIND_OPTS "--leak-check=full --error-limit=no --num-callers=24 --show-leak-kinds=all"
 
 =head2 B<gdb>
 
